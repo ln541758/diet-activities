@@ -1,68 +1,39 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import Activities from "./Screens/Activities";
+import Home from "./Screens/Home";
 import Diet from "./Screens/Diet";
-import Settings from "./Screens/Settings";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function App() {
-  const Stack = createBottomTabNavigator();
-  function Add() {
-    console.log("Add");
-  }
+  const Stack = createStackNavigator();
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => {
-            let iconName;
-            if (route.name === "Activities") {
-              iconName = "run";
-            } else if (route.name === "Diet") {
-              iconName = "food";
-            } else if (route.name === "Settings") {
-              iconName = "cog";
-            }
-            return (
-              <MaterialCommunityIcons
-                name={iconName}
-                size={size}
-                color={color}
-              />
-            );
-          },
-          tabBarActiveTintColor: "orange",
-          tabBarInactiveTintColor: "darkgray",
-          tabBarStyle: {
-            backgroundColor: "#3D348B",
-          },
+        screenOptions={{
           headerStyle: {
             backgroundColor: "#3D348B",
           },
           headerTintColor: "white",
-        })}
+        }}
       >
         <Stack.Screen
-          name="Activities"
-          component={Activities}
-          options={{
-            headerRight: () => {
-              return <Button title="Add" onPress={Add} />;
-            },
-          }}
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Diet"
-          component={Diet}
-          options={{
-            headerRight: () => {
-              return <Button title="Add" onPress={Add} />;
-            },
-          }}
+          name="Add An Activities"
+          component={Activities}
+          options={{ headerBackTitleVisible: false }}
         />
-        <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen
+          name="Add A Diet Entry"
+          component={Diet}
+          options={{ headerBackTitleVisible: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
