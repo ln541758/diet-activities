@@ -4,9 +4,8 @@ import Diet from "./Diet";
 import Settings from "./Settings";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import ItemsList from "../Components/ItemsList";
 import Activities from "./Activities";
-import Item from "./Item";
+import ItemsList from "../Components/ItemsList";
 
 export default function Home({navigation}) {
   const Tab = createBottomTabNavigator();
@@ -40,7 +39,8 @@ export default function Home({navigation}) {
     >
       <Tab.Screen
         name="Activities"
-        component={Item}
+        component={ItemsList}
+        initialParams={{ type: "Activities" }}
         options={{
           headerRight: () => {
             return (
@@ -54,7 +54,8 @@ export default function Home({navigation}) {
       />
       <Tab.Screen
         name="Diet"
-        component={Item}
+        component={ItemsList}
+        initialParams={{ type: "Diet" }}
         options={{
           headerRight: () => {
             return <Button title="Add" onPress={()=>navigation.navigate("Add A Diet Entry")} />;
