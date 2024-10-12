@@ -34,15 +34,23 @@ const activitiesData = [
 ];
 
 export default function ItemsList({ route }) {
-  const { type } = route.params;
+  const { type, newItem } = route.params;
   const [data, setData] = useState([]);
   useEffect(() => {
     if (type === "Diet") {
-      setData(dietData);
+      if (newItem) {
+        setData((prevData) => [newItem, ...prevData]);
+      } else {
+        setData(dietData);
+      }
     } else if (type === "Activities") {
-      setData(activitiesData);
+      if (newItem) {
+        setData((prevData) => [newItem, ...prevData]);
+      } else {
+        setData(activitiesData);
+      }
     }
-  }, [type]);
+  }, [type, newItem]);
 
   return (
     <ScrollView contentContainerStyle={Style}>

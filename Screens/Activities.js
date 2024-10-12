@@ -6,6 +6,8 @@ import {
   Touchable,
   View,
   TouchableOpacity,
+  Button,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import Style from "../Components/Style";
@@ -13,7 +15,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import container from "../Components/Style";
 
-export default function Activities() {
+export default function Activities({ navigation }) {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(null);
@@ -29,6 +31,46 @@ export default function Activities() {
     { label: "Cycling", value: "Cycling" },
     { label: "Hiking", value: "Hiking" },
   ];
+
+  function setSpecial() {
+    if ((title === "Running" || title === "Weights") && amount > 60) {
+      setWarning(true);
+    }
+  }
+
+  function handleSave() {
+    if (title==="") {
+      Alert.alert("Invalid Input", "Please select an activity type.");
+      return;
+    }
+    if (amount==="") {
+      Alert.alert("Invalid Input", "Please type a number.");
+      return;
+    }
+    if (isNaN(amount) || amount <= 0) {
+      Alert.alert("Invalid Input", "Duration must be a positive number.");
+      return;
+    }
+    if (date===null) {
+      Alert.alert("Invalid Input", "Please select a date.");
+      return;
+    }
+
+    setSpecial();
+
+    const newItem = {
+      title,
+      date: date.toDateString(),
+      amount,
+      warning,
+    };
+    navigation.navigate("Activities", { type: "Activities", newItem });
+    navigation.goBack();
+  }
+
+  function handleCancel() {
+    navigation.goBack();
+  }
 
   return (
     <View style={[Style, { justifyContent: "flex-start" }]}>
@@ -55,7 +97,7 @@ export default function Activities() {
       />
 
       <Text style={styles.label}>Date *</Text>
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={() => {
           setShowDatePicker(!showDatePicker);
           if (showDatePicker && !date) {
@@ -64,23 +106,28 @@ export default function Activities() {
         }}
         style={[styles.input, styles.inputGray]}
       >
-        <TextInput
-          value={date ? date.toDateString() : ""}
-          onChangeText={setDate}
-          pointerEvents="none"
-        />
+        <Text>{date ? date.toDateString() : ""}</Text>
       </TouchableOpacity>
-      {showDatePicker && <DateTimePicker
-        value={date || new Date()}
-        mode="date"
-        display="inline"
-        onChange={(event, selectedDate) => {
-          setShowDatePicker(false);
-          if (selectedDate) {
-            return setDate(selectedDate);
-          }
-        }}
-      />}
+      {showDatePicker && (
+        <DateTimePicker
+          value={date || new Date()}
+          mode="date"
+          display="inline"
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              setDate(selectedDate);
+            } else if (!date) {
+              setDate(new Date());
+            }
+          }}
+        />
+      )}
+
+      <View style={styles.button}>
+        <Button title="Cancel" onPress={handleCancel} />
+        <Button title="Save" onPress={handleSave} />
+      </View>
     </View>
   );
 }
@@ -114,5 +161,12 @@ const styles = StyleSheet.create({
   },
   inputGray: {
     backgroundColor: "darkgray",
+  },
+  button: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "90%",
+    alignSelf: "center",
+    marginTop: 150,
   },
 });
