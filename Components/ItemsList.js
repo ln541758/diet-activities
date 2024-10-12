@@ -2,6 +2,8 @@ import { StyleSheet, Text, View, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Style from "./Style";
+import { useContext } from "react";
+import { ThemeContext } from "./ThemeContext";
 
 /* const dietData = [
   {
@@ -44,9 +46,10 @@ export default function ItemsList({ route }) {
       setData((prevData) => [newDietItem, ...prevData]);
     }
   }, [newActivityItem, newDietItem]);
+  const { backgroundColor } = useContext(ThemeContext);
 
   return (
-    <ScrollView contentContainerStyle={Style}>
+    <ScrollView contentContainerStyle={[Style, { backgroundColor }]}>
       <View style={styles.container}>
         {data.map((item, index) => (
           <View key={index} style={styles.card}>

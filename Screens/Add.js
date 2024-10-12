@@ -5,11 +5,12 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Style from "../Components/Style";
 import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "../Components/DatePicker";
 import AddButton from "../Components/AddButton";
+import { ThemeContext } from "../Components/ThemeContext";
 
 export default function Add({ navigation, route }) {
   const { type } = route.params;
@@ -29,76 +30,84 @@ export default function Add({ navigation, route }) {
     { label: "Cycling", value: "Cycling" },
     { label: "Hiking", value: "Hiking" },
   ];
-
-  
+  const { backgroundColor} = useContext(ThemeContext);
 
   return (
-    <View style={[Style, { justifyContent: "flex-start" }]}>
-      {type === "Activities" ? (
-        <Text style={[styles.label, { marginTop: 60 }]}>Activity *</Text>
-      ) : (
-        <Text style={[styles.label, { marginTop: 60 }]}>Description *</Text>
-      )}
+      
+      <View style={[Style, {justifyContent: "flex-start", backgroundColor} ]}>
+        {type === "Activities" ? (
+          <Text style={[styles.label, { marginTop: 60 }]}>Activity *</Text>
+        ) : (
+          <Text style={[styles.label, { marginTop: 60 }]}>Description *</Text>
+        )}
 
-      {type === "Activities" ? (
-        <DropDownPicker
-          open={openDropdown}
-          value={activity}
-          items={options}
-          setOpen={setOpenDropdown}
-          setValue={setActivity}
-          style={[styles.dropdown, styles.inputGray]}
-          dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-          placeholder="Select An Activity"
-          placeholderStyle={{ color: "#3D348B" }}
-          textStyle={{ color: "#3D348B" }}
-        />
-      ) : (
-        <TextInput
-          style={[styles.input, styles.inputGray, { height: 100 }]}
-          value={description}
-          onChangeText={setDescription}
-        />
-      )}
+        {type === "Activities" ? (
+          <DropDownPicker
+            open={openDropdown}
+            value={activity}
+            items={options}
+            setOpen={setOpenDropdown}
+            setValue={setActivity}
+            style={[styles.dropdown, styles.inputGray]}
+            dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
+            placeholder="Select An Activity"
+            placeholderStyle={{ color: "#3D348B" }}
+            textStyle={{ color: "#3D348B" }}
+          />
+        ) : (
+          <TextInput
+            style={[styles.input, styles.inputGray, { height: 100 }]}
+            value={description}
+            onChangeText={setDescription}
+          />
+        )}
 
-      {type === "Activities" ? (
-        <Text style={styles.label}>Duration (min) *</Text>
-      ) : (
-        <Text style={styles.label}>Calories *</Text>
-      )}
+        {type === "Activities" ? (
+          <Text style={styles.label}>Duration (min) *</Text>
+        ) : (
+          <Text style={styles.label}>Calories *</Text>
+        )}
 
-      {type === "Activities" ? (
-        <TextInput
+        {type === "Activities" ? (
+          <TextInput
+            style={[styles.input, styles.inputGray]}
+            keyboardType="number-pad"
+            value={duration}
+            onChangeText={setDuration}
+          />
+        ) : (
+          <TextInput
+            style={[styles.input, styles.inputGray]}
+            keyboardType="number-pad"
+            value={calories}
+            onChangeText={setCalories}
+          />
+        )}
+
+        <Text style={styles.label}>Date *</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setShowDatePicker(!showDatePicker);
+            if (showDatePicker && !date) {
+              setDate(new Date());
+            }
+          }}
           style={[styles.input, styles.inputGray]}
-          keyboardType="number-pad"
-          value={duration}
-          onChangeText={setDuration}
-        />
-      ) : (
-        <TextInput
-          style={[styles.input, styles.inputGray]}
-          keyboardType="number-pad"
-          value={calories}
-          onChangeText={setCalories}
-        />
-      )}
+        >
+          <Text>{date ? date.toDateString() : ""}</Text>
+        </TouchableOpacity>
+        {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
 
-      <Text style={styles.label}>Date *</Text>
-      <TouchableOpacity
-        onPress={() => {
-          setShowDatePicker(!showDatePicker);
-          if (showDatePicker && !date) {
-            setDate(new Date());
-          }
-        }}
-        style={[styles.input, styles.inputGray]}
-      >
-        <Text>{date ? date.toDateString() : ""}</Text>
-      </TouchableOpacity>
-      {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
-
-      <AddButton type={type} navigation={navigation} activity={activity} date={date} duration={duration} description={description} calories={calories} />
-    </View>
+        <AddButton
+          type={type}
+          navigation={navigation}
+          activity={activity}
+          date={date}
+          duration={duration}
+          description={description}
+          calories={calories}
+        />
+      </View>
   );
 }
 
