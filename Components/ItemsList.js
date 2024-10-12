@@ -3,68 +3,63 @@ import React, { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Style from "./Style";
 
-const dietData = [
+/* const dietData = [
   {
-    title: "Breakfast",
+    description: "Breakfast",
     date: "Tue Sep 17 2024",
-    amount: 500,
+    calories: 500,
     warning: false,
   },
   {
-    title: "Lunch",
+    description: "Lunch",
     date: "Wed Sep 25 2024",
-    amount: 900,
+    calories: 900,
     warning: true,
   },
 ];
 
 const activitiesData = [
   {
-    title: "Yoga",
+    activity: "Yoga",
     date: "Mon Sep 16 2024",
-    amount: 60,
+    duration: 60,
     warning: false,
   },
   {
-    title: "Weights",
+    activity: "Weights",
     date: "Mon Jul 15 2024",
-    amount: 120,
+    duration: 120,
     warning: true,
   },
-];
+]; */
 
 export default function ItemsList({ route }) {
-  const { type, newItem } = route.params;
+  const { type, newActivityItem, newDietItem } = route.params || {};
   const [data, setData] = useState([]);
   useEffect(() => {
-    if (type === "Diet") {
-      if (newItem) {
-        setData((prevData) => [newItem, ...prevData]);
-      } else {
-        setData(dietData);
-      }
-    } else if (type === "Activities") {
-      if (newItem) {
-        setData((prevData) => [newItem, ...prevData]);
-      } else {
-        setData(activitiesData);
-      }
+    if (type === "Activities" && newActivityItem) {
+      // console.log("Adding new activity item:", newActivityItem);
+      setData((prevData) => [newActivityItem, ...prevData]);
+    } else if (type === "Diet" && newDietItem) {
+      setData((prevData) => [newDietItem, ...prevData]);
     }
-  }, [type, newItem]);
+  }, [newActivityItem, newDietItem]);
 
   return (
     <ScrollView contentContainerStyle={Style}>
       <View style={styles.container}>
         {data.map((item, index) => (
           <View key={index} style={styles.card}>
-            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.title}>
+              {type === "Activities" ? item.activity : item.description}
+            </Text>
             <View style={styles.detailsContainer}>
               {item.warning && (
                 <FontAwesome name="warning" style={styles.icon} />
               )}
               <Text style={styles.text}>{item.date}</Text>
               <Text style={[styles.text, { marginLeft: 5 }]}>
-                {type === "Diet" ? item.amount : item.amount + " min"}
+                {type === "Activities" ? item.duration + " min" : item.calories}
               </Text>
             </View>
           </View>

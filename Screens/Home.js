@@ -1,13 +1,11 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import React from "react";
-import Diet from "./Diet";
 import Settings from "./Settings";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Activities from "./Activities";
 import ItemsList from "../Components/ItemsList";
 
-export default function Home({navigation}) {
+export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
 
   return (
@@ -37,31 +35,36 @@ export default function Home({navigation}) {
         headerTintColor: "white",
       })}
     >
-      <Tab.Screen
-        name="Activities"
-        component={ItemsList}
-        initialParams={{ type: "Activities" }}
-        options={{
-          headerRight: () => {
-            return (
-              <Button
-                title="Add"
-                onPress={() => navigation.navigate("Add An Activities")}
-              />
-            );
-          },
-        }}
-      />
-      <Tab.Screen
-        name="Diet"
-        component={ItemsList}
-        initialParams={{ type: "Diet" }}
-        options={{
-          headerRight: () => {
-            return <Button title="Add" onPress={()=>navigation.navigate("Add A Diet Entry")} />;
-          },
-        }}
-      />
+        <Tab.Screen
+          name="Activities"
+          component={ItemsList}
+          initialParams={{ type: "Activities" }}
+          options={{
+            headerRight: () => {
+              return (
+                <Button
+                  title="Add"
+                  onPress={() => navigation.navigate("Add", { type: "Activities" })}
+                />
+              );
+            },
+          }}
+        />
+        <Tab.Screen
+          name="Diet"
+          component={ItemsList}
+          initialParams={{ type: "Diet" }}
+          options={{
+            headerRight: () => {
+              return (
+                <Button
+                  title="Add"
+                  onPress={() => navigation.navigate("Add",{ type: "Diet" })}
+                />
+              );
+            },
+          }}
+        />
       <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>
   );

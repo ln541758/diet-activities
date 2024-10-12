@@ -2,9 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Activities from "./Screens/Activities";
+import Add from "./Screens/Add";
 import Home from "./Screens/Home";
-import Diet from "./Screens/Diet";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -25,14 +24,13 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Add An Activities"
-          component={Activities}
-          options={{ headerBackTitleVisible: false }}
-        />
-        <Stack.Screen
-          name="Add A Diet Entry"
-          component={Diet}
-          options={{ headerBackTitleVisible: false }}
+          name="Add"
+          component={Add}
+          options={({route})=>({
+            title: route.params?.type === "Activities" ? "Add An Activity" : "Add A Diet Entry",
+            headerBackTitleVisible: false
+          })
+        }
         />
       </Stack.Navigator>
     </NavigationContainer>
