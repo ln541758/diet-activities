@@ -4,6 +4,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Style from "./Style";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
+import { DataContext } from "./DataContext";
 
 /* const dietData = [
   {
@@ -36,17 +37,10 @@ const activitiesData = [
 ]; */
 
 export default function ItemsList({ route }) {
-  const { type, newActivityItem, newDietItem } = route.params || {};
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    if (type === "Activities" && newActivityItem) {
-      // console.log("Adding new activity item:", newActivityItem);
-      setData((prevData) => [newActivityItem, ...prevData]);
-    } else if (type === "Diet" && newDietItem) {
-      setData((prevData) => [newDietItem, ...prevData]);
-    }
-  }, [newActivityItem, newDietItem]);
+  const { activities, diet} = useContext(DataContext);
   const { backgroundColor } = useContext(ThemeContext);
+  const { type } = route.params;
+  const data = type === "Activities" ? activities : diet;
 
   return (
     <ScrollView contentContainerStyle={[Style, { backgroundColor }]}>

@@ -32,6 +32,7 @@ export default function Add({ navigation, route }) {
   ];
   const { backgroundColor} = useContext(ThemeContext);
 
+
   return (
       
       <View style={[Style, {justifyContent: "flex-start", backgroundColor} ]}>

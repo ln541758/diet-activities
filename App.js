@@ -5,12 +5,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Add from "./Screens/Add";
 import Home from "./Screens/Home";
 import { ThemeProvider } from "./Components/ThemeContext";
+import { DataProvider } from "./Components/DataContext";
 
 export default function App() {
   const Stack = createStackNavigator();
 
   return (
     <ThemeProvider>
+      <DataProvider>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -38,6 +40,7 @@ export default function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
+      </DataProvider>
     </ThemeProvider>
   );
 }

@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Button, Alert } from "react-native";
+import { useContext } from "react";
+import { DataContext } from "./DataContext";
 
 export default function AddButton({
   type,
@@ -11,6 +13,8 @@ export default function AddButton({
   description,
   calories,
 }) {
+  const { addActivity, addDiet } = useContext(DataContext);
+
   function getWarning(warning) {
     if (type === "Activities") {
       if ((activity === "Running" || activity === "Weights") && duration > 60) {
@@ -75,14 +79,8 @@ export default function AddButton({
     };
     {
       type === "Activities"
-        ? navigation.navigate("Activities", {
-            type: "Activities",
-            newActivityItem,
-          })
-        : navigation.navigate("Diet", {
-            type: "Diet",
-            newDietItem,
-          });
+        ? (addActivity(newActivityItem), navigation.navigate("Activities", { type: "Activities" }))
+        : (addDiet(newDietItem), navigation.navigate("Diet", { type: "Diet" }));
     }
   }
 
