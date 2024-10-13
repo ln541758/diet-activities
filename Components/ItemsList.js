@@ -1,12 +1,64 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Style from "./Style";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { DataContext } from "./DataContext";
 
-/* const dietData = [
+/**
+ * ItemsList component - Displays a list of either activities or diet items.
+ *
+ * Props:
+ * - route: object - Navigation prop to access route parameters.
+ *   - type: string - Represents the type of items to display ("Activities" or "Diet").
+ *
+ * Contexts:
+ * - DataContext: Provides the data for activities and diet entries.
+ * - ThemeContext: Provides theme-related values, such as background color.
+ */
+export default function ItemsList({ route }) {
+  // Destructure activities and diet data from DataContext
+  const { activities, diet } = useContext(DataContext);
+
+  // Destructure background color from ThemeContext for consistent theming
+  const { backgroundColor } = useContext(ThemeContext);
+
+  // Destructure type from route params to determine whether to display activities or diet items
+  const { type } = route.params;
+
+  // Determine which dataset to use based on the type ("Activities" or "Diet")
+  const data = type === "Activities" ? activities : diet;
+
+  return (
+    // Scrollable container to show the list of items
+    <ScrollView contentContainerStyle={[Style.container, { backgroundColor }]}>
+      <View style={Style.itemContainer}>
+        {data.map((item, index) => (
+          <View key={index} style={Style.card}>
+            <Text style={Style.title}>
+              {type === "Activities" ? item.activity : item.description}
+            </Text>
+            <View style={Style.detailsContainer}>
+              {item.warning && (
+                <FontAwesome name="warning" style={Style.icon} />
+              )}
+              <Text style={Style.text}>{item.date}</Text>
+              <Text style={[Style.text, { marginLeft: 5 }]}>
+                {type === "Activities" ? item.duration + " min" : item.calories}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  );
+}
+
+/* 
+Sample Data (For testing purposes)
+
+const dietData = [
   {
     description: "Breakfast",
     date: "Tue Sep 17 2024",
@@ -34,71 +86,5 @@ const activitiesData = [
     duration: 120,
     warning: true,
   },
-]; */
-
-export default function ItemsList({ route }) {
-  const { activities, diet} = useContext(DataContext);
-  const { backgroundColor } = useContext(ThemeContext);
-  const { type } = route.params;
-  const data = type === "Activities" ? activities : diet;
-
-  return (
-    <ScrollView contentContainerStyle={[Style, { backgroundColor }]}>
-      <View style={styles.container}>
-        {data.map((item, index) => (
-          <View key={index} style={styles.card}>
-            <Text style={styles.title}>
-              {type === "Activities" ? item.activity : item.description}
-            </Text>
-            <View style={styles.detailsContainer}>
-              {item.warning && (
-                <FontAwesome name="warning" style={styles.icon} />
-              )}
-              <Text style={styles.text}>{item.date}</Text>
-              <Text style={[styles.text, { marginLeft: 5 }]}>
-                {type === "Activities" ? item.duration + " min" : item.calories}
-              </Text>
-            </View>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 20,
-    alignItems: "center",
-  },
-  card: {
-    flexDirection: "row",
-    backgroundColor: "#3D348B",
-    borderRadius: 6,
-    padding: 10,
-    margin: 5,
-    width: "90%",
-  },
-  title: {
-    color: "white",
-    alignSelf: "center",
-    fontWeight: "bold",
-  },
-  icon: {
-    color: "orange",
-    size: 20,
-    alignSelf: "center",
-    marginRight: 5,
-  },
-  text: {
-    backgroundColor: "white",
-    padding: 5,
-    paddingHorizontal: 20,
-  },
-  detailsContainer: {
-    flex: 4,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-});
+]; 
+*/
