@@ -1,4 +1,11 @@
-import { Text, TextInput, View, TouchableOpacity } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from "react-native";
 import React, { useState, useContext } from "react";
 import Style from "../Components/Style";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -47,94 +54,104 @@ export default function Add({ navigation, route }) {
   const { backgroundColor } = useContext(ThemeContext);
 
   return (
-    <View
-      style={[
-        Style.container,
-        { justifyContent: "flex-start", backgroundColor },
-      ]}
-    >
-      {/* Dynamic label for activity or diet description */}
-      {type === "Activities" ? (
-        <Text style={[Style.label, { marginTop: 60 }]}>Activity *</Text>
-      ) : (
-        <Text style={[Style.label, { marginTop: 60 }]}>Description *</Text>
-      )}
-
-      {/* DropDownPicker for selecting an activity, shown if type is "Activities" */}
-      {type === "Activities" ? (
-        <DropDownPicker
-          open={openDropdown}
-          value={activity}
-          items={options}
-          setOpen={setOpenDropdown}
-          setValue={setActivity}
-          style={[Style.dropdown, Style.inputGray]}
-          dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-          placeholder="Select An Activity"
-          placeholderStyle={{ color: colors.darkPurple }}
-          textStyle={{ color: colors.darkPurple }}
-        />
-      ) : (
-        // TextInput for diet description, shown if type is "Diet"
-        <TextInput
-          style={[Style.input, Style.inputGray, { height: 100 }]}
-          value={description}
-          onChangeText={setDescription}
-        />
-      )}
-
-      {/* Label for duration or calories depending on the type */}
-      {type === "Activities" ? (
-        <Text style={Style.label}>Duration (min) *</Text>
-      ) : (
-        <Text style={Style.label}>Calories *</Text>
-      )}
-
-      {/* Input for duration or calories depending on the type */}
-      {type === "Activities" ? (
-        <TextInput
-          style={[Style.input, Style.inputGray]}
-          keyboardType="number-pad"
-          value={duration}
-          onChangeText={setDuration}
-        />
-      ) : (
-        <TextInput
-          style={[Style.input, Style.inputGray]}
-          keyboardType="number-pad"
-          value={calories}
-          onChangeText={setCalories}
-        />
-      )}
-
-      {/* Label and date picker for selecting a date */}
-      <Text style={Style.label}>Date *</Text>
-      <TouchableOpacity
-        onPress={() => {
-          setShowDatePicker(!showDatePicker);
-          if (showDatePicker && !date) {
-            setDate(new Date());
-          }
-        }}
-        style={[Style.input, Style.inputGray]}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View
+        style={[
+          Style.container,
+          { justifyContent: "flex-start", backgroundColor },
+        ]}
       >
-        {/* Display the selected date or an empty string if no date is selected */}
-        <Text>{date ? date.toDateString() : ""}</Text>
-      </TouchableOpacity>
+        <View style={{ width: "100%", zIndex: 1000 }}>
+          {/* Dynamic label for activity or diet description */}
+          {type === "Activities" ? (
+            <Text style={[Style.label, { marginTop: 60 }]}>Activity *</Text>
+          ) : (
+            <Text style={[Style.label, { marginTop: 60 }]}>Description *</Text>
+          )}
 
-      {/* Display DatePicker component if showDatePicker is true */}
-      {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
+          {/* DropDownPicker for selecting an activity, shown if type is "Activities" */}
+          {type === "Activities" ? (
+            <DropDownPicker
+              open={openDropdown}
+              value={activity}
+              items={options}
+              setOpen={setOpenDropdown}
+              setValue={setActivity}
+              style={[Style.dropdown, Style.inputGray]}
+              dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
+              placeholder="Select An Activity"
+              placeholderStyle={{ color: colors.darkPurple }}
+              textStyle={{ color: colors.darkPurple }}
+            />
+          ) : (
+            // TextInput for diet description, shown if type is "Diet"
+            <TextInput
+              style={[Style.input, Style.inputGray, { height: 100 }]}
+              value={description}
+              onChangeText={setDescription}
+            />
+          )}
+        </View>
 
-      {/* AddButton component to handle saving the new entry */}
-      <AddButton
-        type={type}
-        navigation={navigation}
-        activity={activity}
-        date={date}
-        duration={duration}
-        description={description}
-        calories={calories}
-      />
-    </View>
+        <View style={{ width: "100%" }}>
+          {/* Label for duration or calories depending on the type */}
+          {type === "Activities" ? (
+            <Text style={Style.label}>Duration (min) *</Text>
+          ) : (
+            <Text style={Style.label}>Calories *</Text>
+          )}
+
+          {/* Input for duration or calories depending on the type */}
+          {type === "Activities" ? (
+            <TextInput
+              style={[Style.input, Style.inputGray]}
+              keyboardType="number-pad"
+              value={duration}
+              onChangeText={setDuration}
+              autoFocus={true}
+            />
+          ) : (
+            <TextInput
+              style={[Style.input, Style.inputGray]}
+              keyboardType="number-pad"
+              value={calories}
+              onChangeText={setCalories}
+              autoFocus={true}
+            />
+          )}
+        </View>
+
+        <View style={{ width: "100%" }}>
+          {/* Label and date picker for selecting a date */}
+          <Text style={Style.label}>Date *</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setShowDatePicker(!showDatePicker);
+              if (showDatePicker && !date) {
+                setDate(new Date());
+              }
+            }}
+            style={[Style.input, Style.inputGray]}
+          >
+            {/* Display the selected date or an empty string if no date is selected */}
+            <Text>{date ? date.toDateString() : ""}</Text>
+          </TouchableOpacity>
+
+          {/* Display DatePicker component if showDatePicker is true */}
+          {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
+
+          {/* AddButton component to handle saving the new entry */}
+          <AddButton
+            type={type}
+            navigation={navigation}
+            activity={activity}
+            date={date}
+            duration={duration}
+            description={description}
+            calories={calories}
+          />
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }

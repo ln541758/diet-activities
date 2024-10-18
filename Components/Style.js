@@ -19,11 +19,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "flex-start",
     marginLeft: 20,
+
   },
   dropdown: {
     marginBottom: 35,
     width: "90%",
     alignSelf: "center",
+    borderWidth: 2,
+    borderColor: colors.darkPurple,
   },
   input: {
     borderWidth: 2,
@@ -33,6 +36,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: "90%",
     color: colors.darkPurple,
+    marginLeft: 20,
   },
   inputGray: {
     backgroundColor: colors.darkGray,
