@@ -1,10 +1,14 @@
 import { database } from "./FirebaseSetup";
-import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 
 export function subscribeToDatabase(collectionName, callback) {
-  const q = query(
-    collection(database, collectionName)
-  );
+  const q = query(collection(database, collectionName));
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const items = [];
     querySnapshot.forEach((doc) => {
@@ -16,6 +20,10 @@ export function subscribeToDatabase(collectionName, callback) {
   return unsubscribe;
 }
 
-export async function writeToDatabase(data) {
-  await addDoc(collection(database, "data"), data);
+export async function writeToDatabase(collectionName, data) {
+  try {
+    await addDoc(collection(database, collectionName), data);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
 }

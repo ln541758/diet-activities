@@ -1,5 +1,6 @@
 import React from "react";
 import { createContext, useState } from "react";
+import { writeToDatabase } from "../Firebase/FirebaseHelper";
 
 /**
  * DataContext - This context is used to manage the state for activities and diet entries across the application.
@@ -27,7 +28,8 @@ export const DataProvider = ({ children }) => {
    * @param {object} newActivity - The new activity object to be added.
    */
   function addActivity(newActivity) {
-    setActivities((prevActivities) => [newActivity, ...prevActivities]);
+    writeToDatabase("Activities", newActivity);
+    // setActivities((prevActivities) => [newActivity, ...prevActivities]);
   }
 
   /**
@@ -36,8 +38,9 @@ export const DataProvider = ({ children }) => {
    * @param {object} newDiet - The new diet object to be added.
    */
   function addDiet(newDiet) {
+    writeToDatabase("Diet", newDiet);
     // console.log("Adding activity:", newActivity);
-    setDiet((prevDiet) => [newDiet, ...prevDiet]);
+    // setDiet((prevDiet) => [newDiet, ...prevDiet]);
   }
 
   function setActivitiesData(newActivities) {
