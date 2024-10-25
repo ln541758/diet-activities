@@ -5,6 +5,7 @@ import Style from "./Style";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { DataContext } from "./DataContext";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 /**
  * ItemsList component - Displays a list of either activities or diet items.
@@ -17,7 +18,7 @@ import { DataContext } from "./DataContext";
  * - DataContext: Provides the data for activities and diet entries.
  * - ThemeContext: Provides theme-related values, such as background color.
  */
-export default function ItemsList({ route }) {
+export default function ItemsList({ navigation, route }) {
   // Destructure activities and diet data from DataContext
   const { activities, diet } = useContext(DataContext);
 
@@ -35,7 +36,7 @@ export default function ItemsList({ route }) {
     <ScrollView contentContainerStyle={[Style.container, { backgroundColor }]}>
       <View style={Style.itemContainer}>
         {data.map((item, index) => (
-          <View key={index} style={Style.card}>
+          <TouchableOpacity key={index} style={Style.card} onPress={() => navigation.navigate("Add", { type: type })}>
             <Text style={Style.title}>
               {type === "Activities" ? item.activity : item.description}
             </Text>
@@ -48,7 +49,7 @@ export default function ItemsList({ route }) {
                 {type === "Activities" ? item.duration + " min" : item.calories}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>
