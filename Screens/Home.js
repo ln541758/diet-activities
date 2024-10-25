@@ -5,6 +5,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ItemsList from "../Components/ItemsList";
 import colors from "../Components/Color";
+import AddItem from "../Components/AddItem";
 
 /**
  * Home component - Defines a bottom tab navigation for the app, with tabs for Activities, Diet, and Settings.
@@ -60,12 +61,7 @@ export default function Home({ navigation }) {
           // Add a button to the header for adding a new activity
           headerRight: () => {
             return (
-              <Button
-                title="Add"
-                onPress={() =>
-                  navigation.navigate("Add", { type: "Activities" })
-                }
-              />
+              AddItem({ navigation: navigation, type: "Activities" })
             );
           },
         }}
@@ -81,10 +77,7 @@ export default function Home({ navigation }) {
           // Add a button to the header for adding a new diet entry
           headerRight: () => {
             return (
-              <Button
-                title="Add"
-                onPress={() => navigation.navigate("Add", { type: "Diet" })}
-              />
+              AddItem({ navigation: navigation, type: "Diet" })
             );
           },
         }}
