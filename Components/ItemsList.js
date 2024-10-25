@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Style from "./Style";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { DataContext } from "./DataContext";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { subscribeToDatabase } from "../Firebase/FirebaseHelper";
 
 /**
  * ItemsList component - Displays a list of either activities or diet items.
@@ -20,7 +21,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
  */
 export default function ItemsList({ navigation, route }) {
   // Destructure activities and diet data from DataContext
-  const { activities, diet } = useContext(DataContext);
+  const { activities, diet, setActivitiesData, setDietData } =
+    useContext(DataContext);
 
   // Destructure background color from ThemeContext for consistent theming
   const { backgroundColor } = useContext(ThemeContext);
@@ -31,12 +33,28 @@ export default function ItemsList({ navigation, route }) {
   // Determine which dataset to use based on the type ("Activities" or "Diet")
   const data = type === "Activities" ? activities : diet;
 
+  useEffect(() => {
+    function callback(newData) {
+      if (type === "Activities") {
+        setActivitiesData(newData);
+      } else {
+        setDietData(newData);
+      }
+    }
+    // console.log("Subscribing to database for", type);
+    const unsubscribe = subscribeToDatabase(type, callback);
+    return () => unsubscribe();
+  }, [type]);
   return (
     // Scrollable container to show the list of items
     <ScrollView contentContainerStyle={[Style.container, { backgroundColor }]}>
       <View style={Style.itemContainer}>
         {data.map((item, index) => (
-          <TouchableOpacity key={index} style={Style.card} onPress={() => navigation.navigate("Add", { type: type })}>
+          <TouchableOpacity
+            key={index}
+            style={Style.card}
+            onPress={() => navigation.navigate("Add", { type: type })}
+          >
             <Text style={Style.title}>
               {type === "Activities" ? item.activity : item.description}
             </Text>

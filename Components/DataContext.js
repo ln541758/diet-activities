@@ -40,9 +40,17 @@ export const DataProvider = ({ children }) => {
     setDiet((prevDiet) => [newDiet, ...prevDiet]);
   }
 
+  function setActivitiesData(newActivities) {
+    setActivities(newActivities);
+  }
+
+  function setDietData(newDiet) {
+    setDiet(newDiet);
+  }
+
   // Providing activities, diet, and the add functions to all child components
   return (
-    <DataContext.Provider value={{ activities, diet, addActivity, addDiet }}>
+    <DataContext.Provider value={{ activities, diet, addActivity, addDiet, setActivitiesData, setDietData }}>
       {children}
     </DataContext.Provider>
   );
