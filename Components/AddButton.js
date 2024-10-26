@@ -32,7 +32,8 @@ export default function AddButton({
   calories,
   itemID,
 }) {
-  const { addActivity, addDiet, editActivity, editDiet } = useContext(DataContext);
+  const { addActivity, addDiet, editActivity, editDiet } =
+    useContext(DataContext);
 
   /**
    * getWarning - Determines if the new entry should have a warning flag.
@@ -119,14 +120,24 @@ export default function AddButton({
       type === "Activities"
         ? (editActivity(itemID, newActivityItem),
           navigation.navigate("Activities", { type: "Activities" }))
-        : (editDiet(itemID, newDietItem), navigation.navigate("Diet", { type: "Diet" }));
-    } else 
-    {
+        : (editDiet(itemID, newDietItem),
+          navigation.navigate("Diet", { type: "Diet" }));
+    } else {
       type === "Activities"
         ? (addActivity(newActivityItem),
           navigation.navigate("Activities", { type: "Activities" }))
         : (addDiet(newDietItem), navigation.navigate("Diet", { type: "Diet" }));
     }
+  }
+
+  function saveData() {
+    Alert.alert("Important", "Are you sure you want to save these changes?", [
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Save"),
+      },
+      { text: "Yes", onPress: () => handleSave() },
+    ]);
   }
 
   /**
@@ -140,7 +151,7 @@ export default function AddButton({
   return (
     <View style={Style.button}>
       <Button title="Cancel" onPress={handleCancel} />
-      <Button title="Save" onPress={handleSave} />
+      <Button title="Save" onPress={saveData} />
     </View>
   );
 }
