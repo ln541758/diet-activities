@@ -2,7 +2,6 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -15,6 +14,7 @@ import AddButton from "../Components/AddButton";
 import { ThemeContext } from "../Components/ThemeContext";
 import colors from "../Components/Color";
 import { subscribeToDatabase } from "../Firebase/FirebaseHelper";
+import ReuseButton from "../Components/ReuseButton";
 
 /**
  * Add component - Allows users to add new activity or diet entries.
@@ -39,8 +39,9 @@ export default function Add({ navigation, route }) {
   const [duration, setDuration] = useState("");
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [isChecked, setChecked] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState("");
+  const [warning, setWarning] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
 
   // Options for activities dropdown
   const options = [
@@ -72,7 +73,7 @@ export default function Add({ navigation, route }) {
           if (item.date && typeof item.date === "string") {
             setDate(new Date(item.date));
           }
-          setChecked(item.checked);
+          setWarning(item.warning);
         }
       });
       return () => unsubscribe();
@@ -81,117 +82,126 @@ export default function Add({ navigation, route }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <View
-      style={[
-        Style.container,
-        { justifyContent: "flex-start", backgroundColor },
-      ]}
-    >
-      <View style={{ width: "100%", zIndex: 1000 }}>
-        {/* Dynamic label for activity or diet description */}
-        {type === "Activities" ? (
-          <Text style={[Style.label, { marginTop: 60 }]}>Activity *</Text>
-        ) : (
-          <Text style={[Style.label, { marginTop: 60 }]}>Description *</Text>
-        )}
+      <View
+        style={[
+          Style.container,
+          { justifyContent: "flex-start", backgroundColor },
+        ]}
+      >
+        <View style={{ width: "100%", zIndex: 1000 }}>
+          {/* Dynamic label for activity or diet description */}
+          {type === "Activities" ? (
+            <Text style={[Style.label, { marginTop: 60 }]}>Activity *</Text>
+          ) : (
+            <Text style={[Style.label, { marginTop: 60 }]}>Description *</Text>
+          )}
 
-        {/* DropDownPicker for selecting an activity, shown if type is "Activities" */}
-        {type === "Activities" ? (
-          <DropDownPicker
-            open={openDropdown}
-            value={activity}
-            items={options}
-            setOpen={setOpenDropdown}
-            setValue={setActivity}
-            style={[Style.dropdown, Style.inputGray]}
-            dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-            placeholder="Select An Activity"
-            placeholderStyle={{ color: colors.darkPurple }}
-            textStyle={{ color: colors.darkPurple }}
-          />
-        ) : (
-          // TextInput for diet description, shown if type is "Diet"
-          <TextInput
-            style={[Style.input, Style.inputGray, { height: 100 }]}
-            value={description}
-            onChangeText={setDescription}
-          />
-        )}
-      </View>
-
-      <View style={{ width: "100%" }}>
-        {/* Label for duration or calories depending on the type */}
-        {type === "Activities" ? (
-          <Text style={Style.label}>Duration (min) *</Text>
-        ) : (
-          <Text style={Style.label}>Calories *</Text>
-        )}
-
-        {/* Input for duration or calories depending on the type */}
-        {type === "Activities" ? (
-          <TextInput
-            style={[Style.input, Style.inputGray]}
-            keyboardType="number-pad"
-            value={duration}
-            onChangeText={setDuration}
-          />
-        ) : (
-          <TextInput
-            style={[Style.input, Style.inputGray]}
-            keyboardType="number-pad"
-            value={calories}
-            onChangeText={setCalories}
-          />
-        )}
-      </View>
-
-      <View style={{ width: "100%" }}>
-        {/* Label and date picker for selecting a date */}
-        <Text style={Style.label}>Date *</Text>
-        <TouchableOpacity
-          onPress={() => {
-            setShowDatePicker(!showDatePicker);
-            if (showDatePicker && !date) {
-              setDate(new Date());
-            }
-          }}
-          style={[Style.input, Style.inputGray]}
-        >
-          {/* Display the selected date or an empty string if no date is selected */}
-          <Text style={{ color: colors.darkPurple }}>
-            {date ? date.toDateString() : ""}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Display DatePicker component if showDatePicker is true */}
-        {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
-
-        <View style={{ flexDirection: "row", marginTop: 100 }}>
-          <Text style={Style.label}>
-            This item is marked as special. Select the checkbox if you would
-            like to approve it.
-          </Text>
-          <Checkbox
-            value={!isChecked}
-            onValueChange={setChecked}
-            style={{ margin: 10 }}
-          />
+          {/* DropDownPicker for selecting an activity, shown if type is "Activities" */}
+          {type === "Activities" ? (
+            <DropDownPicker
+              open={openDropdown}
+              value={activity}
+              items={options}
+              setOpen={setOpenDropdown}
+              setValue={setActivity}
+              style={[Style.dropdown, Style.inputGray]}
+              dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
+              placeholder="Select An Activity"
+              placeholderStyle={{ color: colors.darkPurple }}
+              textStyle={{ color: colors.darkPurple }}
+            />
+          ) : (
+            // TextInput for diet description, shown if type is "Diet"
+            <TextInput
+              style={[Style.input, Style.inputGray, { height: 100 }]}
+              value={description}
+              onChangeText={setDescription}
+            />
+          )}
         </View>
 
-        {/* AddButton component to handle saving the new entry */}
-        <AddButton
-          type={type}
-          navigation={navigation}
-          activity={activity}
-          date={date}
-          duration={duration}
-          description={description}
-          calories={calories}
-          itemID={itemID}
-          checked = {isChecked}
-        />
+        <View style={{ width: "100%" }}>
+          {/* Label for duration or calories depending on the type */}
+          {type === "Activities" ? (
+            <Text style={Style.label}>Duration (min) *</Text>
+          ) : (
+            <Text style={Style.label}>Calories *</Text>
+          )}
+
+          {/* Input for duration or calories depending on the type */}
+          {type === "Activities" ? (
+            <TextInput
+              style={[Style.input, Style.inputGray]}
+              keyboardType="number-pad"
+              value={duration}
+              onChangeText={setDuration}
+            />
+          ) : (
+            <TextInput
+              style={[Style.input, Style.inputGray]}
+              keyboardType="number-pad"
+              value={calories}
+              onChangeText={setCalories}
+            />
+          )}
+        </View>
+
+        <View style={{ width: "100%" }}>
+          {/* Label and date picker for selecting a date */}
+          <Text style={Style.label}>Date *</Text>
+          <ReuseButton
+            onPress={() => {
+              setShowDatePicker(!showDatePicker);
+              if (showDatePicker && !date) {
+                setDate(new Date());
+              }
+            }}
+            pressStyle={[
+              Style.input,
+              Style.inputGray,
+              { backgroundColor: colors.white },
+            ]}
+            unpressStyle={[Style.input, Style.inputGray]}
+          >
+            {/* Display the selected date or an empty string if no date is selected */}
+            <Text style={{ color: colors.darkPurple }}>
+              {date ? date.toDateString() : ""}
+            </Text>
+          </ReuseButton>
+          {/* Display DatePicker component if showDatePicker is true */}
+          {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
+
+          {warning && (
+            <View style={{ flexDirection: "row", marginTop: 100 }}>
+              <Text style={Style.label}>
+                This item is marked as special. Select the checkbox if you would
+                like to approve it.
+              </Text>
+              <Checkbox
+                value={isChecked}
+                onValueChange={() => {
+                  setIsChecked(!isChecked);
+                }}
+                style={{ margin: 10 }}
+              />
+            </View>
+          )}
+
+          {/* AddButton component to handle saving the new entry */}
+          <AddButton
+            type={type}
+            navigation={navigation}
+            activity={activity}
+            date={date}
+            duration={duration}
+            description={description}
+            calories={calories}
+            itemID={itemID}
+            warning={warning}
+            isChecked={isChecked}
+          />
+        </View>
       </View>
-    </View>
     </TouchableWithoutFeedback>
   );
 }

@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
 import Style from "../Components/Style";
-import { Pressable } from "react-native-gesture-handler";
 import { useContext } from "react";
 import { ThemeContext } from "../Components/ThemeContext";
 import colors from "../Components/Color";
+import ReuseButton from "../Components/ReuseButton";
 
 /**
  * Settings component - Provides settings options for the user, including the ability to toggle the theme.
@@ -20,12 +20,16 @@ export default function Settings() {
     // Container for settings screen, applying the current theme background color
     <View style={[Style.container, { backgroundColor }]}>
       {/* Button to toggle between themes */}
-      <Pressable
+      <ReuseButton
         onPress={toggleBackgroundColor}
-        style={({pressed})=>[Style.settingButton, {backgroundColor: pressed ? colors.orange : colors.darkPurple}]}
+        pressStyle={[Style.settingButton, { backgroundColor: colors.blue }]}
+        unpressStyle={[
+          Style.settingButton,
+          { backgroundColor: colors.darkPurple },
+        ]}
       >
-        <Text style={Style.settingText}> Toggle Theme</Text>
-      </Pressable>
+        <Text style={Style.settingText}>Toggle Theme</Text>
+      </ReuseButton>
     </View>
   );
 }

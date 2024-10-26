@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderWidth: 2,
     borderColor: colors.darkPurple,
+    backgroundColor: colors.darkGray,
   },
   input: {
     borderWidth: 2,

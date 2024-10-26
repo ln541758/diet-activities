@@ -8,6 +8,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import colors from "./Components/Color";
 import { deleteFromDatabase } from "./Firebase/FirebaseHelper";
 import { Alert } from "react-native";
+import ReuseButton from "./Components/ReuseButton";
 
 /**
  * App component - Root component of the application.
@@ -79,10 +80,7 @@ export default function App() {
                 headerBackTitleVisible: false,
                 headerRight: () =>
                   route.params.itemID ? (
-                    <AntDesign
-                      name="delete"
-                      size={24}
-                      color={colors.white}
+                    <ReuseButton
                       onPress={() =>
                         deleteItem(
                           route.params?.type,
@@ -90,8 +88,16 @@ export default function App() {
                           navigation
                         )
                       }
-                      style={{ marginRight: 20 }}
-                    />
+                      pressStyle={{ backgroundColor: colors.blue }}
+                      unpressStyle={{ backgroundColor: colors.darkPurple }}
+                    >
+                      <AntDesign
+                        name="delete"
+                        size={24}
+                        color={colors.white}
+                        style={{ marginRight: 20 }}
+                      />
+                    </ReuseButton>
                   ) : null,
               })}
             />

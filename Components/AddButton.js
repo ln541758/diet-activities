@@ -1,11 +1,11 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Button, Alert } from "react-native";
-import { useContext } from "react";
-import { DataContext } from "./DataContext";
+import { View, Text } from "react-native";
+import React, { useContext } from "react";
+import { Alert } from "react-native";
 import Style from "./Style";
 import colors from "./Color";
-import styles from "./Style";
+import ReuseButton from "./ReuseButton";
+import getWarning from "./Warning";
+import { DataContext } from "./DataContext";
 
 /**
  * AddButton component is responsible for handling the save and cancel actions
@@ -33,29 +33,11 @@ export default function AddButton({
   description,
   calories,
   itemID,
-  checked,
+  warning,
+  isChecked,
 }) {
   const { addActivity, addDiet, editActivity, editDiet } =
     useContext(DataContext);
-
-  /**
-   * getWarning - Determines if the new entry should have a warning flag.
-   *
-   * @param {boolean} warning - Initial warning value.
-   * @returns {boolean} - Whether the entry should be flagged with a warning.
-   */
-  function getWarning(warning) {
-    if (type === "Activities") {
-      if ((activity === "Running" || activity === "Weights") && duration > 60) {
-        warning = true; // Flag activities as warning if they exceed 60 minutes
-      }
-    } else {
-      if (calories > 800) {
-        warning = true; // Flag diet entries as warning if calories exceed 800
-      }
-    }
-    return warning;
-  }
 
   /**
    * handleSave - Handles the "Save" button press event.
@@ -100,22 +82,21 @@ export default function AddButton({
     }
 
     // Set warning if necessary
-    let warning = false;
-    warning = getWarning(warning);
+    let warning = getWarning({ type, activity, duration, calories });
 
     // Create new activity or diet item
     const newActivityItem = {
       activity: activity,
       date: date.toDateString(),
       duration: duration,
-      warning: warning && checked,
+      warning: warning && !isChecked,
     };
 
     const newDietItem = {
       description: description,
       date: date.toDateString(),
       calories: calories,
-      warning: warning && checked,
+      warning: warning && !isChecked,
     };
 
     // Add the new item to the context and navigate back to the list
@@ -152,25 +133,21 @@ export default function AddButton({
   }
 
   return (
-    <View style={Style.button}>
-      <Pressable
+    <View style={warning ? Style.button : [Style.button, { marginTop: 180 }]}>
+      <ReuseButton
         onPress={handleCancel}
-        style={({ pressed }) => [
-          { backgroundColor: pressed ? colors.orange : colors.pink },
-          Style.buttonEdit,
-        ]}
+        pressStyle={[Style.buttonEdit, { backgroundColor: colors.orange }]}
+        unpressStyle={[Style.buttonEdit, { backgroundColor: colors.pink }]}
       >
         <Text style={{ color: colors.white }}>Cancel</Text>
-      </Pressable>
-      <Pressable
+      </ReuseButton>
+      <ReuseButton
         onPress={saveData}
-        style={({ pressed }) => [
-          { backgroundColor: pressed ? colors.blue : colors.darkPurple },
-          Style.buttonEdit,
-        ]}
+        pressStyle={[Style.buttonEdit, { backgroundColor: colors.blue }]}
+        unpressStyle={[Style.buttonEdit, { backgroundColor: colors.darkPurple }]}
       >
         <Text style={{ color: colors.white }}>Save</Text>
-      </Pressable>
+      </ReuseButton>
     </View>
   );
 }

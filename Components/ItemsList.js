@@ -5,8 +5,9 @@ import Style from "./Style";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { DataContext } from "./DataContext";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { subscribeToDatabase } from "../Firebase/FirebaseHelper";
+import ReuseButton from "./ReuseButton";
+import colors from "./Color";
 
 /**
  * ItemsList component - Displays a list of either activities or diet items.
@@ -50,12 +51,14 @@ export default function ItemsList({ navigation, route }) {
     <ScrollView contentContainerStyle={[Style.container, { backgroundColor }]}>
       <View style={Style.itemContainer}>
         {data.map((item, index) => (
-          <TouchableOpacity
+          <ReuseButton
             key={index}
-            style={Style.card}
-            onPress={() => navigation.navigate("Add", { type: type, itemID: item.id })}
+            pressStyle={[Style.card, { backgroundColor: colors.blue }]}
+            unpressStyle={Style.card}
+            onPress={() =>
+              navigation.navigate("Add", { type: type, itemID: item.id })
+            }
           >
-            
             <Text style={Style.title}>
               {type === "Activities" ? item.activity : item.description}
             </Text>
@@ -68,7 +71,7 @@ export default function ItemsList({ navigation, route }) {
                 {type === "Activities" ? item.duration + " min" : item.calories}
               </Text>
             </View>
-          </TouchableOpacity>
+          </ReuseButton>
         ))}
       </View>
     </ScrollView>
