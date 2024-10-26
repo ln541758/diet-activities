@@ -4,6 +4,10 @@ import Add from "./Screens/Add";
 import Home from "./Screens/Home";
 import { ThemeProvider } from "./Components/ThemeContext";
 import { DataProvider } from "./Components/DataContext";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import colors from "./Components/Color";
+import { deleteFromDatabase } from "./Firebase/FirebaseHelper";
+import { Alert } from "react-native";
 
 /**
  * App component - Root component of the application.
@@ -12,6 +16,27 @@ import { DataProvider } from "./Components/DataContext";
 export default function App() {
   // Create a Stack Navigator to handle screen transitions within the app
   const Stack = createStackNavigator();
+
+  function handleDelete(collectionName, itemID, navigation) {
+    if (itemID) {
+      deleteFromDatabase(collectionName, itemID);
+      navigation.navigate("Home");
+    } else {
+      console.log("No itemID provided for deletion.");
+    }
+  }
+  function deleteItem(collectionName, itemID, navigation) {
+    Alert.alert("Delete", "Are you sure you want to delete this item?", [
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Delete"),
+      },
+      {
+        text: "Yes",
+        onPress: () => handleDelete(collectionName, itemID, navigation),
+      },
+    ]);
+  }
 
   return (
     // ThemeProvider provides theme-related values and functions to all child components
@@ -43,14 +68,31 @@ export default function App() {
             <Stack.Screen
               name="Add"
               component={Add}
-              options={({ route }) => ({
+              options={({ route, navigation }) => ({
                 // Dynamically set the title based on the type of item to be added (Activities or Diet)
-                title:
-                  route.params?.type === "Activities"
-                    ? "Add An Activity"
-                    : "Add A Diet Entry",
+                title: route.params.itemID
+                  ? "Edit"
+                  : route.params?.type === "Activities"
+                  ? "Add An Activity"
+                  : "Add A Diet Entry",
                 // Hide the back button title
                 headerBackTitleVisible: false,
+                headerRight: () =>
+                  route.params.itemID ? (
+                    <AntDesign
+                      name="delete"
+                      size={24}
+                      color={colors.white}
+                      onPress={() =>
+                        deleteItem(
+                          route.params?.type,
+                          route.params?.itemID,
+                          navigation
+                        )
+                      }
+                      style={{ marginRight: 20 }}
+                    />
+                  ) : null,
               })}
             />
           </Stack.Navigator>

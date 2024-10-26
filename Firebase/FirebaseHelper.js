@@ -6,6 +6,7 @@ import {
   updateDoc,
   doc,
   onSnapshot,
+  deleteDoc,
 } from "firebase/firestore";
 
 export function subscribeToDatabase(collectionName, callback) {
@@ -34,5 +35,13 @@ export async function editInDatabase(collectionName, id, data) {
     await updateDoc(doc(database, collectionName, id), data);
   } catch (e) {
     console.error("Error updating document: ", e);
+  }
+}
+
+export async function deleteFromDatabase(collectionName, id) {
+  try {
+    await deleteDoc(doc(database, collectionName, id));
+  } catch (e) {
+    console.error("Error deleting document: ", e);
   }
 }
