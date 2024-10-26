@@ -35,17 +35,21 @@ export default function ItemsList({ navigation, route }) {
   const data = type === "Activities" ? activities : diet;
 
   useEffect(() => {
+    // Define the callback function to handle new data when it is fetched from the database
     function callback(newData) {
+      // Update the state based on the type of data
       if (type === "Activities") {
         setActivitiesData(newData);
       } else {
         setDietData(newData);
       }
     }
-    // console.log("Subscribing to database for", type);
     const unsubscribe = subscribeToDatabase(type, callback);
+
+    // Return a cleanup function to unsubscribe from the database when the component unmounts
     return () => unsubscribe();
   }, [type]);
+
   return (
     // Scrollable container to show the list of items
     <ScrollView contentContainerStyle={[Style.container, { backgroundColor }]}>

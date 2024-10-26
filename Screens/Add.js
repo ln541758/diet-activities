@@ -57,6 +57,7 @@ export default function Add({ navigation, route }) {
   // Get the current background color from ThemeContext to apply the current theme
   const { backgroundColor } = useContext(ThemeContext);
 
+  // Subscribe to the database to get the item details when editing an existing item
   useEffect(() => {
     if (itemID) {
       const unsubscribe = subscribeToDatabase(type, (items) => {
@@ -171,6 +172,7 @@ export default function Add({ navigation, route }) {
           {/* Display DatePicker component if showDatePicker is true */}
           {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
 
+          {/* Warning message for special items */}
           {warning && (
             <View style={{ flexDirection: "row", marginTop: 100 }}>
               <Text style={Style.label}>

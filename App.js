@@ -18,6 +18,7 @@ export default function App() {
   // Create a Stack Navigator to handle screen transitions within the app
   const Stack = createStackNavigator();
 
+  // Function to handle deletion of an item from the database
   function handleDelete(collectionName, itemID, navigation) {
     if (itemID) {
       deleteFromDatabase(collectionName, itemID);
@@ -26,6 +27,8 @@ export default function App() {
       console.log("No itemID provided for deletion.");
     }
   }
+
+  // Function to confirm deletion of an item
   function deleteItem(collectionName, itemID, navigation) {
     Alert.alert("Delete", "Are you sure you want to delete this item?", [
       {
@@ -78,6 +81,7 @@ export default function App() {
                   : "Add A Diet Entry",
                 // Hide the back button title
                 headerBackTitleVisible: false,
+                // Set the icon and pressable area for the delete button
                 headerRight: () =>
                   route.params.itemID ? (
                     <ReuseButton

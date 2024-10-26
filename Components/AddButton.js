@@ -114,6 +114,14 @@ export default function AddButton({
     }
   }
 
+  /**
+   * saveData - Function to prompt the user for confirmation before saving data.
+   *
+   * This function shows an alert with a message, asking the user if they are sure
+   * they want to proceed with saving the changes. It provides two options:
+   * - "No": Cancels the save operation.
+   * - "Yes": Proceeds with saving the changes by calling the `handleSave` function.
+   */
   function saveData() {
     Alert.alert("Important", "Are you sure you want to save these changes?", [
       {
@@ -134,6 +142,7 @@ export default function AddButton({
 
   return (
     <View style={warning ? Style.button : [Style.button, { marginTop: 180 }]}>
+      {/* Cancel button */}
       <ReuseButton
         onPress={handleCancel}
         pressStyle={[Style.buttonEdit, { backgroundColor: colors.orange }]}
@@ -141,10 +150,14 @@ export default function AddButton({
       >
         <Text style={{ color: colors.white }}>Cancel</Text>
       </ReuseButton>
+      {/* Save button */}
       <ReuseButton
         onPress={saveData}
         pressStyle={[Style.buttonEdit, { backgroundColor: colors.blue }]}
-        unpressStyle={[Style.buttonEdit, { backgroundColor: colors.darkPurple }]}
+        unpressStyle={[
+          Style.buttonEdit,
+          { backgroundColor: colors.darkPurple },
+        ]}
       >
         <Text style={{ color: colors.white }}>Save</Text>
       </ReuseButton>
