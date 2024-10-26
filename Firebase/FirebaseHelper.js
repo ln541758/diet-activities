@@ -3,7 +3,8 @@ import {
   collection,
   addDoc,
   query,
-  where,
+  updateDoc,
+  doc,
   onSnapshot,
 } from "firebase/firestore";
 
@@ -25,5 +26,13 @@ export async function writeToDatabase(collectionName, data) {
     await addDoc(collection(database, collectionName), data);
   } catch (e) {
     console.error("Error adding document: ", e);
+  }
+}
+
+export async function editInDatabase(collectionName, id, data) {
+  try {
+    await updateDoc(doc(database, collectionName, id), data);
+  } catch (e) {
+    console.error("Error updating document: ", e);
   }
 }

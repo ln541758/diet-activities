@@ -14,7 +14,6 @@ import AddButton from "../Components/AddButton";
 import { ThemeContext } from "../Components/ThemeContext";
 import colors from "../Components/Color";
 import { subscribeToDatabase } from "../Firebase/FirebaseHelper";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 /**
  * Add component - Allows users to add new activity or diet entries.
@@ -175,6 +174,7 @@ export default function Add({ navigation, route }) {
             duration={duration}
             description={description}
             calories={calories}
+            itemID={itemID}
           />
         </View>
       </View>

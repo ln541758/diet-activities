@@ -30,8 +30,9 @@ export default function AddButton({
   duration,
   description,
   calories,
+  itemID,
 }) {
-  const { addActivity, addDiet } = useContext(DataContext);
+  const { addActivity, addDiet, editActivity, editDiet } = useContext(DataContext);
 
   /**
    * getWarning - Determines if the new entry should have a warning flag.
@@ -114,6 +115,12 @@ export default function AddButton({
     };
 
     // Add the new item to the context and navigate back to the list
+    if (itemID) {
+      type === "Activities"
+        ? (editActivity(itemID, newActivityItem),
+          navigation.navigate("Activities", { type: "Activities" }))
+        : (editDiet(itemID, newDietItem), navigation.navigate("Diet", { type: "Diet" }));
+    } else 
     {
       type === "Activities"
         ? (addActivity(newActivityItem),
