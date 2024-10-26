@@ -6,13 +6,15 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Style from "../Components/Style";
 import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "../Components/DatePicker";
 import AddButton from "../Components/AddButton";
 import { ThemeContext } from "../Components/ThemeContext";
 import colors from "../Components/Color";
+import { subscribeToDatabase } from "../Firebase/FirebaseHelper";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 /**
  * Add component - Allows users to add new activity or diet entries.
@@ -28,7 +30,7 @@ import colors from "../Components/Color";
  */
 export default function Add({ navigation, route }) {
   // Destructure the type from route parameters to determine whether to add an activity or diet entry
-  const { type } = route.params;
+  const { type, itemID } = route.params;
 
   // State hooks for managing form input values
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -52,6 +54,28 @@ export default function Add({ navigation, route }) {
 
   // Get the current background color from ThemeContext to apply the current theme
   const { backgroundColor } = useContext(ThemeContext);
+
+  useEffect(() => {
+    if (itemID) {
+      const unsubscribe = subscribeToDatabase(type, (items) => {
+        const item = items.find((item) => item.id === itemID);
+        // console.log("Items from database:", item);
+        if (item) {
+          if (type === "Activities") {
+            setActivity(item.activity);
+            setDuration(item.duration);
+          } else {
+            setDescription(item.description);
+            setCalories(item.calories);
+          }
+          if (item.date && typeof item.date === "string") {
+            setDate(new Date(item.date));
+          }
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [itemID]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -134,7 +158,9 @@ export default function Add({ navigation, route }) {
             style={[Style.input, Style.inputGray]}
           >
             {/* Display the selected date or an empty string if no date is selected */}
-            <Text>{date ? date.toDateString() : ""}</Text>
+            <Text style={{ color: colors.darkPurple }}>
+              {date ? date.toDateString() : ""}
+            </Text>
           </TouchableOpacity>
 
           {/* Display DatePicker component if showDatePicker is true */}

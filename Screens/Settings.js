@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import Style from "../Components/Style";
-import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
+import { Pressable } from "react-native-gesture-handler";
 import { useContext } from "react";
 import { ThemeContext } from "../Components/ThemeContext";
 import colors from "../Components/Color";

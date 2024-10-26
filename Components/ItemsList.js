@@ -53,8 +53,9 @@ export default function ItemsList({ navigation, route }) {
           <TouchableOpacity
             key={index}
             style={Style.card}
-            onPress={() => navigation.navigate("Add", { type: type })}
+            onPress={() => navigation.navigate("Add", { type: type, itemID: item.id })}
           >
+            
             <Text style={Style.title}>
               {type === "Activities" ? item.activity : item.description}
             </Text>
