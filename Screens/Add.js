@@ -6,6 +6,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+import Checkbox from "expo-checkbox";
 import React, { useState, useContext, useEffect } from "react";
 import Style from "../Components/Style";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -39,6 +40,7 @@ export default function Add({ navigation, route }) {
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isChecked, setChecked] = useState(false);
 
   // Options for activities dropdown
   const options = [
@@ -70,114 +72,126 @@ export default function Add({ navigation, route }) {
           if (item.date && typeof item.date === "string") {
             setDate(new Date(item.date));
           }
+          setChecked(item.checked);
         }
       });
       return () => unsubscribe();
     }
-  }, [itemID]);
+  }, [type, itemID]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View
-        style={[
-          Style.container,
-          { justifyContent: "flex-start", backgroundColor },
-        ]}
-      >
-        <View style={{ width: "100%", zIndex: 1000 }}>
-          {/* Dynamic label for activity or diet description */}
-          {type === "Activities" ? (
-            <Text style={[Style.label, { marginTop: 60 }]}>Activity *</Text>
-          ) : (
-            <Text style={[Style.label, { marginTop: 60 }]}>Description *</Text>
-          )}
+    <View
+      style={[
+        Style.container,
+        { justifyContent: "flex-start", backgroundColor },
+      ]}
+    >
+      <View style={{ width: "100%", zIndex: 1000 }}>
+        {/* Dynamic label for activity or diet description */}
+        {type === "Activities" ? (
+          <Text style={[Style.label, { marginTop: 60 }]}>Activity *</Text>
+        ) : (
+          <Text style={[Style.label, { marginTop: 60 }]}>Description *</Text>
+        )}
 
-          {/* DropDownPicker for selecting an activity, shown if type is "Activities" */}
-          {type === "Activities" ? (
-            <DropDownPicker
-              open={openDropdown}
-              value={activity}
-              items={options}
-              setOpen={setOpenDropdown}
-              setValue={setActivity}
-              style={[Style.dropdown, Style.inputGray]}
-              dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-              placeholder="Select An Activity"
-              placeholderStyle={{ color: colors.darkPurple }}
-              textStyle={{ color: colors.darkPurple }}
-            />
-          ) : (
-            // TextInput for diet description, shown if type is "Diet"
-            <TextInput
-              style={[Style.input, Style.inputGray, { height: 100 }]}
-              value={description}
-              onChangeText={setDescription}
-            />
-          )}
-        </View>
+        {/* DropDownPicker for selecting an activity, shown if type is "Activities" */}
+        {type === "Activities" ? (
+          <DropDownPicker
+            open={openDropdown}
+            value={activity}
+            items={options}
+            setOpen={setOpenDropdown}
+            setValue={setActivity}
+            style={[Style.dropdown, Style.inputGray]}
+            dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
+            placeholder="Select An Activity"
+            placeholderStyle={{ color: colors.darkPurple }}
+            textStyle={{ color: colors.darkPurple }}
+          />
+        ) : (
+          // TextInput for diet description, shown if type is "Diet"
+          <TextInput
+            style={[Style.input, Style.inputGray, { height: 100 }]}
+            value={description}
+            onChangeText={setDescription}
+          />
+        )}
+      </View>
 
-        <View style={{ width: "100%" }}>
-          {/* Label for duration or calories depending on the type */}
-          {type === "Activities" ? (
-            <Text style={Style.label}>Duration (min) *</Text>
-          ) : (
-            <Text style={Style.label}>Calories *</Text>
-          )}
+      <View style={{ width: "100%" }}>
+        {/* Label for duration or calories depending on the type */}
+        {type === "Activities" ? (
+          <Text style={Style.label}>Duration (min) *</Text>
+        ) : (
+          <Text style={Style.label}>Calories *</Text>
+        )}
 
-          {/* Input for duration or calories depending on the type */}
-          {type === "Activities" ? (
-            <TextInput
-              style={[Style.input, Style.inputGray]}
-              keyboardType="number-pad"
-              value={duration}
-              onChangeText={setDuration}
-              autoFocus={true}
-            />
-          ) : (
-            <TextInput
-              style={[Style.input, Style.inputGray]}
-              keyboardType="number-pad"
-              value={calories}
-              onChangeText={setCalories}
-              autoFocus={true}
-            />
-          )}
-        </View>
-
-        <View style={{ width: "100%" }}>
-          {/* Label and date picker for selecting a date */}
-          <Text style={Style.label}>Date *</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setShowDatePicker(!showDatePicker);
-              if (showDatePicker && !date) {
-                setDate(new Date());
-              }
-            }}
+        {/* Input for duration or calories depending on the type */}
+        {type === "Activities" ? (
+          <TextInput
             style={[Style.input, Style.inputGray]}
-          >
-            {/* Display the selected date or an empty string if no date is selected */}
-            <Text style={{ color: colors.darkPurple }}>
-              {date ? date.toDateString() : ""}
-            </Text>
-          </TouchableOpacity>
+            keyboardType="number-pad"
+            value={duration}
+            onChangeText={setDuration}
+          />
+        ) : (
+          <TextInput
+            style={[Style.input, Style.inputGray]}
+            keyboardType="number-pad"
+            value={calories}
+            onChangeText={setCalories}
+          />
+        )}
+      </View>
 
-          {/* Display DatePicker component if showDatePicker is true */}
-          {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
+      <View style={{ width: "100%" }}>
+        {/* Label and date picker for selecting a date */}
+        <Text style={Style.label}>Date *</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setShowDatePicker(!showDatePicker);
+            if (showDatePicker && !date) {
+              setDate(new Date());
+            }
+          }}
+          style={[Style.input, Style.inputGray]}
+        >
+          {/* Display the selected date or an empty string if no date is selected */}
+          <Text style={{ color: colors.darkPurple }}>
+            {date ? date.toDateString() : ""}
+          </Text>
+        </TouchableOpacity>
 
-          {/* AddButton component to handle saving the new entry */}
-          <AddButton
-            type={type}
-            navigation={navigation}
-            activity={activity}
-            date={date}
-            duration={duration}
-            description={description}
-            calories={calories}
-            itemID={itemID}
+        {/* Display DatePicker component if showDatePicker is true */}
+        {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
+
+        <View style={{ flexDirection: "row", marginTop: 100 }}>
+          <Text style={Style.label}>
+            This item is marked as special. Select the checkbox if you would
+            like to approve it.
+          </Text>
+          <Checkbox
+            value={!isChecked}
+            onValueChange={setChecked}
+            style={{ margin: 10 }}
           />
         </View>
+
+        {/* AddButton component to handle saving the new entry */}
+        <AddButton
+          type={type}
+          navigation={navigation}
+          activity={activity}
+          date={date}
+          duration={duration}
+          description={description}
+          calories={calories}
+          itemID={itemID}
+          checked = {isChecked}
+        />
       </View>
+    </View>
     </TouchableWithoutFeedback>
   );
 }

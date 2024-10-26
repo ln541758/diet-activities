@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "flex-start",
     marginLeft: 20,
-
   },
   dropdown: {
     marginBottom: 35,
@@ -44,9 +43,9 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     justifyContent: "space-around",
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
-    marginTop: 150,
+    marginTop: 20,
   },
   itemContainer: {
     flex: 1,
@@ -89,6 +88,12 @@ const styles = StyleSheet.create({
   },
   settingText: {
     color: colors.white,
+  },
+  buttonEdit: {
+    padding: 10,
+    borderRadius: 5,
+    width: 150,
+    alignItems: "center",
   },
 });
 

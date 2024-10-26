@@ -9,5 +9,7 @@ const colors = {
     white: "white",
     orange: "orange",
     togglePurple: "#605f90",
+    blue: "#007AFF",
+    pink:"#99004d"
 };
 export default colors;

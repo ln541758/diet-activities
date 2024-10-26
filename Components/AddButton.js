@@ -1,9 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Button, Alert } from "react-native";
 import { useContext } from "react";
 import { DataContext } from "./DataContext";
 import Style from "./Style";
+import colors from "./Color";
+import styles from "./Style";
 
 /**
  * AddButton component is responsible for handling the save and cancel actions
@@ -31,6 +33,7 @@ export default function AddButton({
   description,
   calories,
   itemID,
+  checked,
 }) {
   const { addActivity, addDiet, editActivity, editDiet } =
     useContext(DataContext);
@@ -105,14 +108,14 @@ export default function AddButton({
       activity: activity,
       date: date.toDateString(),
       duration: duration,
-      warning: warning,
+      warning: warning && checked,
     };
 
     const newDietItem = {
       description: description,
       date: date.toDateString(),
       calories: calories,
-      warning: warning,
+      warning: warning && checked,
     };
 
     // Add the new item to the context and navigate back to the list
@@ -150,8 +153,24 @@ export default function AddButton({
 
   return (
     <View style={Style.button}>
-      <Button title="Cancel" onPress={handleCancel} />
-      <Button title="Save" onPress={saveData} />
+      <Pressable
+        onPress={handleCancel}
+        style={({ pressed }) => [
+          { backgroundColor: pressed ? colors.orange : colors.pink },
+          Style.buttonEdit,
+        ]}
+      >
+        <Text style={{ color: colors.white }}>Cancel</Text>
+      </Pressable>
+      <Pressable
+        onPress={saveData}
+        style={({ pressed }) => [
+          { backgroundColor: pressed ? colors.blue : colors.darkPurple },
+          Style.buttonEdit,
+        ]}
+      >
+        <Text style={{ color: colors.white }}>Save</Text>
+      </Pressable>
     </View>
   );
 }
