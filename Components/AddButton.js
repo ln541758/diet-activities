@@ -1,9 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Button, Alert } from "react-native";
-import { useContext } from "react";
-import { DataContext } from "./DataContext";
+import { View, Text } from "react-native";
+import React, { useContext } from "react";
+import { Alert } from "react-native";
 import Style from "./Style";
+import colors from "./Color";
+import ReuseButton from "./ReuseButton";
+import getWarning from "./Warning";
+import { DataContext } from "./DataContext";
 
 /**
  * AddButton component is responsible for handling the save and cancel actions
@@ -30,27 +32,12 @@ export default function AddButton({
   duration,
   description,
   calories,
+  itemID,
+  warning,
+  isChecked,
 }) {
-  const { addActivity, addDiet } = useContext(DataContext);
-
-  /**
-   * getWarning - Determines if the new entry should have a warning flag.
-   *
-   * @param {boolean} warning - Initial warning value.
-   * @returns {boolean} - Whether the entry should be flagged with a warning.
-   */
-  function getWarning(warning) {
-    if (type === "Activities") {
-      if ((activity === "Running" || activity === "Weights") && duration > 60) {
-        warning = true; // Flag activities as warning if they exceed 60 minutes
-      }
-    } else {
-      if (calories > 800) {
-        warning = true; // Flag diet entries as warning if calories exceed 800
-      }
-    }
-    return warning;
-  }
+  const { addActivity, addDiet, editActivity, editDiet } =
+    useContext(DataContext);
 
   /**
    * handleSave - Handles the "Save" button press event.
@@ -95,31 +82,54 @@ export default function AddButton({
     }
 
     // Set warning if necessary
-    let warning = false;
-    warning = getWarning(warning);
+    let warning = getWarning({ type, activity, duration, calories });
 
     // Create new activity or diet item
     const newActivityItem = {
       activity: activity,
       date: date.toDateString(),
       duration: duration,
-      warning: warning,
+      warning: warning && !isChecked,
     };
 
     const newDietItem = {
       description: description,
       date: date.toDateString(),
       calories: calories,
-      warning: warning,
+      warning: warning && !isChecked,
     };
 
     // Add the new item to the context and navigate back to the list
-    {
+    if (itemID) {
+      type === "Activities"
+        ? (editActivity(itemID, newActivityItem),
+          navigation.navigate("Activities", { type: "Activities" }))
+        : (editDiet(itemID, newDietItem),
+          navigation.navigate("Diet", { type: "Diet" }));
+    } else {
       type === "Activities"
         ? (addActivity(newActivityItem),
           navigation.navigate("Activities", { type: "Activities" }))
         : (addDiet(newDietItem), navigation.navigate("Diet", { type: "Diet" }));
     }
+  }
+
+  /**
+   * saveData - Function to prompt the user for confirmation before saving data.
+   *
+   * This function shows an alert with a message, asking the user if they are sure
+   * they want to proceed with saving the changes. It provides two options:
+   * - "No": Cancels the save operation.
+   * - "Yes": Proceeds with saving the changes by calling the `handleSave` function.
+   */
+  function saveData() {
+    Alert.alert("Important", "Are you sure you want to save these changes?", [
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Save"),
+      },
+      { text: "Yes", onPress: () => handleSave() },
+    ]);
   }
 
   /**
@@ -131,9 +141,26 @@ export default function AddButton({
   }
 
   return (
-    <View style={Style.button}>
-      <Button title="Cancel" onPress={handleCancel} />
-      <Button title="Save" onPress={handleSave} />
+    <View style={warning ? Style.button : [Style.button, { marginTop: 180 }]}>
+      {/* Cancel button */}
+      <ReuseButton
+        onPress={handleCancel}
+        pressStyle={[Style.buttonEdit, { backgroundColor: colors.orange }]}
+        unpressStyle={[Style.buttonEdit, { backgroundColor: colors.pink }]}
+      >
+        <Text style={{ color: colors.white }}>Cancel</Text>
+      </ReuseButton>
+      {/* Save button */}
+      <ReuseButton
+        onPress={saveData}
+        pressStyle={[Style.buttonEdit, { backgroundColor: colors.blue }]}
+        unpressStyle={[
+          Style.buttonEdit,
+          { backgroundColor: colors.darkPurple },
+        ]}
+      >
+        <Text style={{ color: colors.white }}>Save</Text>
+      </ReuseButton>
     </View>
   );
 }

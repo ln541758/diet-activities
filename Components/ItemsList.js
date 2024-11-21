@@ -1,10 +1,13 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Style from "./Style";
 import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 import { DataContext } from "./DataContext";
+import { subscribeToDatabase } from "../Firebase/FirebaseHelper";
+import ReuseButton from "./ReuseButton";
+import colors from "./Color";
 
 /**
  * ItemsList component - Displays a list of either activities or diet items.
@@ -17,9 +20,10 @@ import { DataContext } from "./DataContext";
  * - DataContext: Provides the data for activities and diet entries.
  * - ThemeContext: Provides theme-related values, such as background color.
  */
-export default function ItemsList({ route }) {
+export default function ItemsList({ navigation, route }) {
   // Destructure activities and diet data from DataContext
-  const { activities, diet } = useContext(DataContext);
+  const { activities, diet, setActivitiesData, setDietData } =
+    useContext(DataContext);
 
   // Destructure background color from ThemeContext for consistent theming
   const { backgroundColor } = useContext(ThemeContext);
@@ -30,12 +34,35 @@ export default function ItemsList({ route }) {
   // Determine which dataset to use based on the type ("Activities" or "Diet")
   const data = type === "Activities" ? activities : diet;
 
+  useEffect(() => {
+    // Define the callback function to handle new data when it is fetched from the database
+    function callback(newData) {
+      // Update the state based on the type of data
+      if (type === "Activities") {
+        setActivitiesData(newData);
+      } else {
+        setDietData(newData);
+      }
+    }
+    const unsubscribe = subscribeToDatabase(type, callback);
+
+    // Return a cleanup function to unsubscribe from the database when the component unmounts
+    return () => unsubscribe();
+  }, [type]);
+
   return (
     // Scrollable container to show the list of items
     <ScrollView contentContainerStyle={[Style.container, { backgroundColor }]}>
       <View style={Style.itemContainer}>
         {data.map((item, index) => (
-          <View key={index} style={Style.card}>
+          <ReuseButton
+            key={index}
+            pressStyle={[Style.card, { backgroundColor: colors.blue }]}
+            unpressStyle={Style.card}
+            onPress={() =>
+              navigation.navigate("Add", { type: type, itemID: item.id })
+            }
+          >
             <Text style={Style.title}>
               {type === "Activities" ? item.activity : item.description}
             </Text>
@@ -48,7 +75,7 @@ export default function ItemsList({ route }) {
                 {type === "Activities" ? item.duration + " min" : item.calories}
               </Text>
             </View>
-          </View>
+          </ReuseButton>
         ))}
       </View>
     </ScrollView>

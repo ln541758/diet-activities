@@ -2,17 +2,19 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import Checkbox from "expo-checkbox";
+import React, { useState, useContext, useEffect } from "react";
 import Style from "../Components/Style";
 import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "../Components/DatePicker";
 import AddButton from "../Components/AddButton";
 import { ThemeContext } from "../Components/ThemeContext";
 import colors from "../Components/Color";
+import { subscribeToDatabase } from "../Firebase/FirebaseHelper";
+import ReuseButton from "../Components/ReuseButton";
 
 /**
  * Add component - Allows users to add new activity or diet entries.
@@ -28,7 +30,7 @@ import colors from "../Components/Color";
  */
 export default function Add({ navigation, route }) {
   // Destructure the type from route parameters to determine whether to add an activity or diet entry
-  const { type } = route.params;
+  const { type, itemID } = route.params;
 
   // State hooks for managing form input values
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -37,7 +39,9 @@ export default function Add({ navigation, route }) {
   const [duration, setDuration] = useState("");
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState("");
+  const [warning, setWarning] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
 
   // Options for activities dropdown
   const options = [
@@ -52,6 +56,30 @@ export default function Add({ navigation, route }) {
 
   // Get the current background color from ThemeContext to apply the current theme
   const { backgroundColor } = useContext(ThemeContext);
+
+  // Subscribe to the database to get the item details when editing an existing item
+  useEffect(() => {
+    if (itemID) {
+      const unsubscribe = subscribeToDatabase(type, (items) => {
+        const item = items.find((item) => item.id === itemID);
+        // console.log("Items from database:", item);
+        if (item) {
+          if (type === "Activities") {
+            setActivity(item.activity);
+            setDuration(item.duration);
+          } else {
+            setDescription(item.description);
+            setCalories(item.calories);
+          }
+          if (item.date && typeof item.date === "string") {
+            setDate(new Date(item.date));
+          }
+          setWarning(item.warning);
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [type, itemID]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -108,7 +136,6 @@ export default function Add({ navigation, route }) {
               keyboardType="number-pad"
               value={duration}
               onChangeText={setDuration}
-              autoFocus={true}
             />
           ) : (
             <TextInput
@@ -116,7 +143,6 @@ export default function Add({ navigation, route }) {
               keyboardType="number-pad"
               value={calories}
               onChangeText={setCalories}
-              autoFocus={true}
             />
           )}
         </View>
@@ -124,21 +150,44 @@ export default function Add({ navigation, route }) {
         <View style={{ width: "100%" }}>
           {/* Label and date picker for selecting a date */}
           <Text style={Style.label}>Date *</Text>
-          <TouchableOpacity
+          <ReuseButton
             onPress={() => {
               setShowDatePicker(!showDatePicker);
               if (showDatePicker && !date) {
                 setDate(new Date());
               }
             }}
-            style={[Style.input, Style.inputGray]}
+            pressStyle={[
+              Style.input,
+              Style.inputGray,
+              { backgroundColor: colors.white },
+            ]}
+            unpressStyle={[Style.input, Style.inputGray]}
           >
             {/* Display the selected date or an empty string if no date is selected */}
-            <Text>{date ? date.toDateString() : ""}</Text>
-          </TouchableOpacity>
-
+            <Text style={{ color: colors.darkPurple }}>
+              {date ? date.toDateString() : ""}
+            </Text>
+          </ReuseButton>
           {/* Display DatePicker component if showDatePicker is true */}
           {showDatePicker && DatePicker({ date, setDate, setShowDatePicker })}
+
+          {/* Warning message for special items */}
+          {warning && (
+            <View style={{ flexDirection: "row", marginTop: 100 }}>
+              <Text style={Style.label}>
+                This item is marked as special. Select the checkbox if you would
+                like to approve it.
+              </Text>
+              <Checkbox
+                value={isChecked}
+                onValueChange={() => {
+                  setIsChecked(!isChecked);
+                }}
+                style={{ margin: 10 }}
+              />
+            </View>
+          )}
 
           {/* AddButton component to handle saving the new entry */}
           <AddButton
@@ -149,6 +198,9 @@ export default function Add({ navigation, route }) {
             duration={duration}
             description={description}
             calories={calories}
+            itemID={itemID}
+            warning={warning}
+            isChecked={isChecked}
           />
         </View>
       </View>
